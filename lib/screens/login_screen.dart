@@ -71,24 +71,6 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Future<void> _logout() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.remove('email');
-      await prefs.remove('password');
-
-      await _supabase.auth.signOut();
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => LoginScreen()),
-      );
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('로그아웃 실패: ${e.toString()}')),
-      );
-    }
-  }
-
   @override
   void dispose() {
     _emailController.dispose();

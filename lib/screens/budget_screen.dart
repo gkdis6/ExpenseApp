@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:financial_app/supabase.dart';
+import 'package:financial_app/utils/auth.dart';
 
 class BudgetScreen extends StatefulWidget {
   @override
@@ -79,7 +80,12 @@ class _BudgetScreenState extends State<BudgetScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Budget App'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.logout),
+            onPressed: () => logout(context),
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
