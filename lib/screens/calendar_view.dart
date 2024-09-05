@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:financial_app/supabase.dart';
+import 'package:financial_app/utils/supabase.dart';
 
 class CalendarView extends StatefulWidget {
   @override

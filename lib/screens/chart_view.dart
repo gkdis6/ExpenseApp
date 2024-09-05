@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:syncfusion_flutter_charts/charts.dart'; // 차트 라이브러리 사용
+import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:financial_app/supabase.dart';
+import 'package:financial_app/utils/supabase.dart';
 
 class ChartView extends StatefulWidget {
   @override

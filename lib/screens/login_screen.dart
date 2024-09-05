@@ -1,7 +1,7 @@
 import 'package:financial_app/screens/user_registration_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:financial_app/supabase.dart';
+import 'package:financial_app/utils/supabase.dart';
 import 'package:financial_app/screens/budget_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
