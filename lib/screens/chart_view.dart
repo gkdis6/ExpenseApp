@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:financial_app/utils/supabase.dart';
+import 'package:intl/intl.dart';
+import 'package:financial_app/screens/add_transaction_screen.dart'; // 추가할 스크린 임포트
 
 class ChartView extends StatefulWidget {
   @override
@@ -12,8 +14,7 @@ class _ChartViewState extends State<ChartView> {
   final SupabaseClient _supabase = SupabaseClientInstance.client;
   DateTime _selectedMonth = DateTime.now();
 
-  Future<List<dynamic>> _fetchMonthlyTransactions() async {
-    // 특정 월의 거래 내역을 가져오는 로직
+  Future<List<Map<String, dynamic>>> _fetchMonthlyTransactions() async {
     final response = await _supabase
         .from('transaction')
         .select()
@@ -24,12 +25,23 @@ class _ChartViewState extends State<ChartView> {
         .lt(
             'date',
             DateTime(_selectedMonth.year, _selectedMonth.month + 1, 1)
-                .toIso8601String());
+                .toIso8601String())
+        .order('date', ascending: true);
 
-    if (!response.isEmpty) {
-      return response;
+    if (response != null && response.isNotEmpty) {
+      List<Map<String, dynamic>> transactions =
+          List<Map<String, dynamic>>.from(response);
+
+      // 누적합 계산
+      double cumulativeSum = 0;
+      for (var transaction in transactions) {
+        cumulativeSum += transaction['amount'];
+        transaction['cumulativeAmount'] = cumulativeSum;
+      }
+
+      return transactions;
     } else {
-      throw Exception('Failed to fetch transactions');
+      return []; // 데이터가 없으면 빈 리스트 반환
     }
   }
 
@@ -56,7 +68,7 @@ class _ChartViewState extends State<ChartView> {
           ),
         ],
       ),
-      body: FutureBuilder<List<dynamic>>(
+      body: FutureBuilder<List<Map<String, dynamic>>>(
         future: _fetchMonthlyTransactions(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -64,19 +76,29 @@ class _ChartViewState extends State<ChartView> {
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (snapshot.hasData) {
-            final transactions = snapshot.data!;
-            // 차트로 데이터를 시각화
-            return SfCartesianChart(
-              primaryXAxis: CategoryAxis(),
-              series: <ChartSeries>[
-                ColumnSeries<dynamic, String>(
-                  dataSource: transactions,
-                  xValueMapper: (transaction, _) =>
-                      transaction['date'].substring(8, 10), // 날짜
-                  yValueMapper: (transaction, _) => transaction['amount'], // 금액
+            if (snapshot.data!.isEmpty) {
+              // 데이터가 없을 경우, AddTransactionScreen으로 이동
+              return AddTransactionScreen(); // 화면에 AddTransactionScreen 표시
+            } else {
+              final transactions = snapshot.data!;
+              return SfCartesianChart(
+                primaryXAxis: DateTimeAxis(
+                  intervalType: DateTimeIntervalType.days,
+                  dateFormat: DateFormat.d(),
+                  interval: 1,
                 ),
-              ],
-            );
+                series: <ChartSeries>[
+                  LineSeries<Map<String, dynamic>, DateTime>(
+                    dataSource: transactions,
+                    xValueMapper: (transaction, _) =>
+                        DateTime.parse(transaction['date']),
+                    yValueMapper: (transaction, _) =>
+                        transaction['cumulativeAmount'],
+                    markerSettings: MarkerSettings(isVisible: true),
+                  ),
+                ],
+              );
+            }
           } else {
             return Center(child: Text('No data available'));
           }
