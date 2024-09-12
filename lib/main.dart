@@ -1,9 +1,5 @@
-import 'package:financial_app/screens/budget_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:financial_app/screens/login_screen.dart';
-import 'package:financial_app/utils/supabase.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 void main() async {
