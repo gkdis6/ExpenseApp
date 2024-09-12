@@ -1,5 +1,6 @@
 import 'package:financial_app/screens/budget_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:financial_app/screens/login_screen.dart';
 import 'package:financial_app/utils/supabase.dart';
@@ -8,46 +9,27 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load();
-  final _supabase = SupabaseClientInstance.client;
-  final session = _supabase.auth.currentSession;
-  runApp(MyApp(isLoggedIn: session != null));
-}
+  // final _supabase = SupabaseClientInstance.client;
+  // final session = _supabase.auth.currentSession;
+  // runApp(MyApp(isLoggedIn: session != null));
+  runApp(MaterialApp(
+    home: LoginScreen(),
+    // theme: ThemeData(
+    //   colorScheme: ColorScheme.fromSeed(
+    //     primary: Color(0xff191A45),
+    //     secondary: Color(0xffF5F2B8),
+    //     seedColor: Color(0xff191A45),
+    //   ),
+    //   // useMaterial3: true,
+    // ),
+  ));
 
-class MyApp extends StatelessWidget {
-  final bool isLoggedIn;
-  MyApp({required this.isLoggedIn});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: isLoggedIn ? BudgetScreen() : LoginScreen(),
-    );
-  }
-}
-
-class DashboardScreen extends StatelessWidget {
-  final SupabaseClient _supabase = SupabaseClientInstance.client;
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('가계부 대시보드'),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.logout),
-            onPressed: () async {
-              await _supabase.auth.signOut();
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => LoginScreen()),
-              );
-            },
-          ),
-        ],
-      ),
-      body: Center(
-        child: Text('대시보드 콘텐츠'),
-      ),
-    );
-  }
+  // runApp(
+  //   MaterialApp.router(
+  //     routerConfig: GoRouter(routes: [
+  //       GoRoute(path: '/', name: 'home', builder: (context, _) => MyApp(isLoggedIn: session != null),)
+  //       GoRoute(path: '/', name: 'home', builder: (context, _) => MyApp(isLoggedIn: session != null),)
+  //     ]),
+  //   )
+  // )
 }
