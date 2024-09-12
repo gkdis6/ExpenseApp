@@ -79,8 +79,13 @@ class _CalendarViewState extends State<CalendarView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Calendar View"),
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(0.0), // 원하는 높이 설정
+        child: AppBar(
+          automaticallyImplyLeading: false, // 뒤로 가기 버튼 같은 기본 요소를 숨김
+          toolbarHeight: 0, // 툴바 높이 설정 (0으로 설정하면 아무것도 표시되지 않음)
+          elevation: 0, // 그림자 제거
+        ),
       ),
       body: Column(
         children: [
