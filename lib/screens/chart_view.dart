@@ -1,9 +1,8 @@
-import 'package:flutter/material.dart';
-import 'package:syncfusion_flutter_charts/charts.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:financial_app/utils/supabase.dart';
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:financial_app/screens/add_transaction_screen.dart'; // 추가할 스크린 임포트
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:syncfusion_flutter_charts/charts.dart';
 
 class ChartView extends StatefulWidget {
   @override
@@ -77,8 +76,7 @@ class _ChartViewState extends State<ChartView> {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (snapshot.hasData) {
             if (snapshot.data!.isEmpty) {
-              // 데이터가 없을 경우, AddTransactionScreen으로 이동
-              return AddTransactionScreen(); // 화면에 AddTransactionScreen 표시
+              return Center(child: Text('No data available'));
             } else {
               final transactions = snapshot.data!;
               return SfCartesianChart(
