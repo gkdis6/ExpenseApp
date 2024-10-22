@@ -3,6 +3,8 @@ import 'package:financial_app/screens/chart_view.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../utils/auth.dart';
+
 class BudgetScreen extends StatefulWidget {
   @override
   State<BudgetScreen> createState() => _BudgetScreenState();
@@ -39,6 +41,10 @@ class _BudgetScreenState extends State<BudgetScreen> {
 
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.logout),
+          onPressed: () => logout(context),
+        ),
         title: Text(DateFormat.yMMM().format(_selectedMonth)),
       ),
       body: _screens[_currentIndex],
