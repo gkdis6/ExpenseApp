@@ -1,7 +1,7 @@
-import 'package:flutter/material.dart';
-import 'package:financial_app/screens/chart_view.dart';
 import 'package:financial_app/screens/calendar_view.dart';
-import 'package:financial_app/utils/auth.dart';
+import 'package:financial_app/screens/chart_view.dart';
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class BudgetScreen extends StatefulWidget {
   @override
@@ -9,66 +9,48 @@ class BudgetScreen extends StatefulWidget {
 }
 
 class _BudgetScreenState extends State<BudgetScreen> {
-  late int index;
+  DateTime _selectedMonth = DateTime.now();
+  int _currentIndex = 0;
 
-  @override
-  void initState() {
-    super.initState();
-    index = 0;
+  void _onTabTapped(int index) {
+    setState(() {
+      _currentIndex = index;
+    });
+  }
+
+  void _changeMonth(DateTime newMonth) {
+    setState(() {
+      _selectedMonth = newMonth;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    List<Widget> _screens = [
+      CalendarView(
+        selectedMonth: _selectedMonth,
+        onMonthChange: _changeMonth,
+      ),
+      ChartView(
+        selectedMonth: _selectedMonth,
+        onMonthChange: _changeMonth,
+      ),
+    ];
+
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.logout),
-          onPressed: () => logout(context),
-        ),
-        // title: Text("Budget Manager"),
-        // actions: [
-        //   IconButton(
-        //     icon: Icon(Icons.bar_chart),
-        //     onPressed: () {
-        //       Navigator.push(
-        //         context,
-        //         MaterialPageRoute(builder: (context) => ChartView()),
-        //       );
-        //     },
-        //   ),
-        //   IconButton(
-        //     icon: Icon(Icons.calendar_today),
-        //     onPressed: () {
-        //       Navigator.push(
-        //         context,
-        //         MaterialPageRoute(builder: (context) => CalendarView()),
-        //       );
-        //     },
-        //   ),
-        // ],
+        title: Text(DateFormat.yMMM().format(_selectedMonth)),
       ),
-      body: SwitchBody(),
+      body: _screens[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
         items: const [
           BottomNavigationBarItem(
               icon: Icon(Icons.calendar_month), label: 'Calendar'),
           BottomNavigationBarItem(icon: Icon(Icons.insights), label: 'Chart')
         ],
-        currentIndex: index,
-        onTap: (newIndex) => setState(() {
-          index = newIndex;
-        }),
+        currentIndex: _currentIndex,
+        onTap: _onTabTapped,
       ),
     );
-  }
-
-  Widget SwitchBody() {
-    switch (index) {
-      case 1:
-        return ChartView();
-      case 0:
-      default:
-        return CalendarView();
-    }
   }
 }

@@ -1,9 +1,15 @@
-import 'package:flutter/material.dart';
-import 'package:table_calendar/table_calendar.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:financial_app/utils/supabase.dart';
+import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:table_calendar/table_calendar.dart';
 
 class CalendarView extends StatefulWidget {
+  final DateTime selectedMonth;
+  final Function(DateTime) onMonthChange;
+
+  const CalendarView(
+      {super.key, required this.selectedMonth, required this.onMonthChange});
+
   @override
   _CalendarViewState createState() => _CalendarViewState();
 }
@@ -19,6 +25,7 @@ class _CalendarViewState extends State<CalendarView> {
   @override
   void initState() {
     super.initState();
+    _focusedDay = widget.selectedMonth;
     _fetchMonthlyTransactions(_focusedDay);
   }
 
@@ -112,7 +119,10 @@ class _CalendarViewState extends State<CalendarView> {
               }
             },
             onPageChanged: (focusedDay) {
-              _focusedDay = focusedDay;
+              setState(() {
+                _focusedDay = focusedDay;
+              });
+              widget.onMonthChange(focusedDay);
               _fetchMonthlyTransactions(focusedDay);
             },
             eventLoader: _getEventsForDay,

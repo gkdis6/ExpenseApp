@@ -5,6 +5,12 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 class ChartView extends StatefulWidget {
+  final DateTime selectedMonth;
+  final Function(DateTime) onMonthChange;
+
+  const ChartView(
+      {super.key, required this.selectedMonth, required this.onMonthChange});
+
   @override
   _ChartViewState createState() => _ChartViewState();
 }
@@ -12,6 +18,12 @@ class ChartView extends StatefulWidget {
 class _ChartViewState extends State<ChartView> {
   final SupabaseClient _supabase = SupabaseClientInstance.client;
   DateTime _selectedMonth = DateTime.now();
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedMonth = widget.selectedMonth;
+  }
 
   Future<List<Map<String, dynamic>>> _fetchMonthlyTransactions() async {
     final response = await _supabase
@@ -48,6 +60,7 @@ class _ChartViewState extends State<ChartView> {
     setState(() {
       _selectedMonth =
           DateTime(_selectedMonth.year, _selectedMonth.month + months, 1);
+      widget.onMonthChange(_selectedMonth);
     });
   }
 
@@ -55,7 +68,7 @@ class _ChartViewState extends State<ChartView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Monthly Overview"),
+        title: Text(DateFormat.yMMM().format(_selectedMonth)),
         actions: [
           IconButton(
             icon: Icon(Icons.arrow_back),
@@ -76,7 +89,7 @@ class _ChartViewState extends State<ChartView> {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (snapshot.hasData) {
             if (snapshot.data!.isEmpty) {
-              return Center(child: Text('No data available'));
+              return Center(child: Text('데이터를 추가해주세요'));
             } else {
               final transactions = snapshot.data!;
               return SfCartesianChart(
