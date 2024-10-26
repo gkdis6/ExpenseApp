@@ -1,19 +1,47 @@
+import 'package:financial_app/utils/supabase.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:financial_app/utils/supabase.dart';
 
-class AddTransactionScreen extends StatefulWidget {
+class AddTransactionDialog extends StatefulWidget {
   @override
-  _AddTransactionScreenState createState() => _AddTransactionScreenState();
+  _AddTransactionDialogState createState() => _AddTransactionDialogState();
 }
 
-class _AddTransactionScreenState extends State<AddTransactionScreen> {
+class _AddTransactionDialogState extends State<AddTransactionDialog> {
   final _descriptionController = TextEditingController();
   final _amountController = TextEditingController();
   final _dateController = TextEditingController();
   final SupabaseClient _supabase = SupabaseClientInstance.client;
+  List<Map<String, dynamic>> _categories = [];
+  String? _selectedCategory;
 
   DateTime _selectedDate = DateTime.now();
+
+  void initState() {
+    super.initState();
+    _fetchCategories(); // 카테고리 불러오기
+  }
+
+  Future<void> _fetchCategories() async {
+    final user = _supabase.auth.currentUser;
+    final userId = user?.id; // 현재 사용자의 user_id
+    final response = await _supabase
+        .from('categories')
+        .select()
+        .eq('user_id', userId as String);
+    print(response);
+    // if (response.error == null) {
+    //   setState(() {
+    //     _categories = response.data as List<Map<String, dynamic>>;
+    //   });
+    // } else {
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //     SnackBar(
+    //         content:
+    //             Text('Failed to fetch categories: ${response.error?.message}')),
+    //   );
+    // }
+  }
 
   Future<void> _selectDate() async {
     final DateTime? picked = await showDatePicker(
@@ -39,11 +67,12 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
     final amount = double.tryParse(_amountController.text) ?? 0;
     final date = DateTime.tryParse(_dateController.text) ?? DateTime.now();
 
-    if (description.isNotEmpty && amount > 0) {
+    if (description.isNotEmpty && amount > 0 && _selectedCategory != null) {
       final response = await _supabase.from('transaction').insert({
         'description': description,
         'amount': amount.toInt(),
         'date': date.toIso8601String(),
+        'category_id': _selectedCategory, // 선택된 카테고리 ID 추가
       });
 
       if (response.error == null) {
@@ -79,6 +108,21 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
               controller: _amountController,
               keyboardType: TextInputType.number,
               decoration: InputDecoration(labelText: 'Amount'),
+            ),
+            DropdownButtonFormField<String>(
+              value: _selectedCategory,
+              hint: Text("Select Category"),
+              items: _categories.map((category) {
+                return DropdownMenuItem<String>(
+                  value: category['id'].toString(), // 카테고리의 ID를 사용
+                  child: Text(category['name']), // 카테고리의 이름을 표시
+                );
+              }).toList(),
+              onChanged: (value) {
+                setState(() {
+                  _selectedCategory = value;
+                });
+              },
             ),
             GestureDetector(
               onTap: _selectDate,

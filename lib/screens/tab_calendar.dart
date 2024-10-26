@@ -3,18 +3,18 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:table_calendar/table_calendar.dart';
 
-class CalendarView extends StatefulWidget {
+class CalendarTab extends StatefulWidget {
   final DateTime selectedMonth;
   final Function(DateTime) onMonthChange;
 
-  const CalendarView(
+  const CalendarTab(
       {super.key, required this.selectedMonth, required this.onMonthChange});
 
   @override
-  _CalendarViewState createState() => _CalendarViewState();
+  _CalendarTabState createState() => _CalendarTabState();
 }
 
-class _CalendarViewState extends State<CalendarView> {
+class _CalendarTabState extends State<CalendarTab> {
   final SupabaseClient _supabase = SupabaseClientInstance.client;
   CalendarFormat _calendarFormat = CalendarFormat.month;
   DateTime _focusedDay = DateTime.now();

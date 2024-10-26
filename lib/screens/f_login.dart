@@ -1,16 +1,16 @@
+import 'package:financial_app/screens/f_budget.dart';
 import 'package:financial_app/screens/user_registration_screen.dart';
-import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:financial_app/utils/supabase.dart';
-import 'package:financial_app/screens/budget_screen.dart';
+import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
-class LoginScreen extends StatefulWidget {
+class LoginFragment extends StatefulWidget {
   @override
-  _LoginScreenState createState() => _LoginScreenState();
+  _LoginFragmentState createState() => _LoginFragmentState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginFragmentState extends State<LoginFragment> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final SupabaseClient _supabase = SupabaseClientInstance.client;
@@ -50,7 +50,7 @@ class _LoginScreenState extends State<LoginScreen> {
         }
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => BudgetScreen()),
+          MaterialPageRoute(builder: (context) => BudgetFragment()),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(

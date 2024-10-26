@@ -4,18 +4,18 @@ import 'package:intl/intl.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
-class ChartView extends StatefulWidget {
+class ChartTab extends StatefulWidget {
   final DateTime selectedMonth;
   final Function(DateTime) onMonthChange;
 
-  const ChartView(
+  const ChartTab(
       {super.key, required this.selectedMonth, required this.onMonthChange});
 
   @override
-  _ChartViewState createState() => _ChartViewState();
+  _ChartTabState createState() => _ChartTabState();
 }
 
-class _ChartViewState extends State<ChartView> {
+class _ChartTabState extends State<ChartTab> {
   final SupabaseClient _supabase = SupabaseClientInstance.client;
   DateTime _selectedMonth = DateTime.now();
 

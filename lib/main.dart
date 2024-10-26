@@ -1,5 +1,5 @@
+import 'package:financial_app/screens/f_login.dart';
 import 'package:flutter/material.dart';
-import 'package:financial_app/screens/login_screen.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 void main() async {
@@ -9,7 +9,7 @@ void main() async {
   // final session = _supabase.auth.currentSession;
   // runApp(MyApp(isLoggedIn: session != null));
   runApp(MaterialApp(
-    home: LoginScreen(),
+    home: LoginFragment(),
     // theme: ThemeData(
     //   colorScheme: ColorScheme.fromSeed(
     //     primary: Color(0xff191A45),
