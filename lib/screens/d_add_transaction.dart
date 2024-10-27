@@ -1,4 +1,5 @@
 import 'package:financial_app/utils/supabase.dart';
+import 'package:financial_app/utils/trans.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -29,18 +30,17 @@ class _AddTransactionDialogState extends State<AddTransactionDialog> {
         .from('category')
         .select()
         .eq('user_id', userId as String);
-    print(response);
-    // if (response.error == null) {
-    //   setState(() {
-    //     _categories = response.data as List<Map<String, dynamic>>;
-    //   });
-    // } else {
-    //   ScaffoldMessenger.of(context).showSnackBar(
-    //     SnackBar(
-    //         content:
-    //             Text('Failed to fetch categories: ${response.error?.message}')),
-    //   );
-    // }
+    if (response.isNotEmpty) {
+      setState(() {
+        _categories = response;
+        _selectedCategory =
+            _categories[0]['id'].toString(); // 첫 번째 카테고리 ID를 초기값으로 설정
+      });
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to fetch categories: $response')),
+      );
+    }
   }
 
   Future<void> _selectDate() async {
@@ -115,7 +115,20 @@ class _AddTransactionDialogState extends State<AddTransactionDialog> {
               items: _categories.map((category) {
                 return DropdownMenuItem<String>(
                   value: category['id'].toString(), // 카테고리의 ID를 사용
-                  child: Text(category['name']), // 카테고리의 이름을 표시
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 12, // 원의 너비
+                        height: 12, // 원의 높이
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: transColor(category['color']), // 색상을 표시
+                        ),
+                      ),
+                      SizedBox(width: 8), // 아이템 간 간격
+                      Text(category['name']), // 카테고리 이름 표시
+                    ],
+                  ),
                 );
               }).toList(),
               onChanged: (value) {
