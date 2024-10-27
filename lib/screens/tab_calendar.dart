@@ -4,11 +4,16 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class CalendarTab extends StatefulWidget {
-  final DateTime selectedMonth;
+  final DateTime selectedDay;
   final Function(DateTime) onMonthChange;
+  final ValueChanged<DateTime> onFocusedDayChanged; // focusedDay 변경 시 호출할 콜백
 
-  const CalendarTab(
-      {super.key, required this.selectedMonth, required this.onMonthChange});
+  const CalendarTab({
+    super.key,
+    required this.selectedDay,
+    required this.onMonthChange,
+    required this.onFocusedDayChanged,
+  });
 
   @override
   _CalendarTabState createState() => _CalendarTabState();
@@ -25,8 +30,22 @@ class _CalendarTabState extends State<CalendarTab> {
   @override
   void initState() {
     super.initState();
-    _focusedDay = widget.selectedMonth;
+    _focusedDay = widget.selectedDay;
     _fetchMonthlyTransactions(_focusedDay);
+  }
+
+  @override
+  void didUpdateWidget(CalendarTab oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // selectedMonth가 변경되었을 때 _focusedDay 갱신
+    if (widget.selectedDay != oldWidget.selectedDay) {
+      setState(() {
+        _focusedDay = widget.selectedDay;
+        _selectedDay = widget.selectedDay;
+        _fetchMonthlyTransactions(_focusedDay);
+        _fetchTransactionsForDay(widget.selectedDay);
+      });
+    }
   }
 
   Future<void> _fetchTransactionsForDay(DateTime date) async {
@@ -109,6 +128,7 @@ class _CalendarTabState extends State<CalendarTab> {
                 _selectedDay = selectedDay;
                 _focusedDay = focusedDay;
               });
+              widget.onFocusedDayChanged(_focusedDay);
               _fetchTransactionsForDay(selectedDay);
             },
             onFormatChanged: (format) {
@@ -122,6 +142,7 @@ class _CalendarTabState extends State<CalendarTab> {
               setState(() {
                 _focusedDay = focusedDay;
               });
+              widget.onFocusedDayChanged(_focusedDay);
               widget.onMonthChange(focusedDay);
               _fetchMonthlyTransactions(focusedDay);
             },

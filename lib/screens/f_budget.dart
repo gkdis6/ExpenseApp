@@ -13,6 +13,8 @@ class BudgetFragment extends StatefulWidget {
 
 class _BudgetFragmentState extends State<BudgetFragment> {
   DateTime _selectedMonth = DateTime.now();
+  DateTime _focusedDayFromCalendar =
+      DateTime.now(); // CalendarTab에서 받아올 focusedDay
   int _currentIndex = 0;
 
   void _onTabTapped(int index) {
@@ -27,16 +29,24 @@ class _BudgetFragmentState extends State<BudgetFragment> {
     });
   }
 
+  void _updateFocusedDay(DateTime focusedDay) {
+    setState(() {
+      _focusedDayFromCalendar = focusedDay; // 최신 focusedDay 값 저장
+    });
+  }
+
   void _showAddTransactionDialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AddTransactionDialog(
-            // onTransactionAdded: () {
-            //   // 트랜잭션이 추가된 후 수행할 작업
-            //   print('Transaction added!');
-            // },
-            );
+          initialDate: _currentIndex == 0
+              ? _focusedDayFromCalendar // CalendarTab일 때만 focusedDay 전달
+              : _selectedMonth,
+          onTransactionAdded: (DateTime selectedDate) {
+            _changeMonth(selectedDate); // 트랜잭션 추가 후 선택된 날짜로 화면 이동
+          },
+        );
       },
     );
   }
@@ -45,8 +55,10 @@ class _BudgetFragmentState extends State<BudgetFragment> {
   Widget build(BuildContext context) {
     List<Widget> _screens = [
       CalendarTab(
-        selectedMonth: _selectedMonth,
+        selectedDay: _selectedMonth,
         onMonthChange: _changeMonth,
+        onFocusedDayChanged:
+            _updateFocusedDay, // CalendarTab에서 focusedDay를 업데이트
       ),
       ChartTab(
         selectedMonth: _selectedMonth,
