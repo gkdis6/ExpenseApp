@@ -26,7 +26,7 @@ class _AddTransactionDialogState extends State<AddTransactionDialog> {
     final user = _supabase.auth.currentUser;
     final userId = user?.id; // 현재 사용자의 user_id
     final response = await _supabase
-        .from('categories')
+        .from('category')
         .select()
         .eq('user_id', userId as String);
     print(response);
