@@ -1,4 +1,5 @@
 import 'package:financial_app/utils/supabase.dart';
+import 'package:financial_app/utils/trans.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -71,7 +72,7 @@ class _CalendarTabState extends State<CalendarTab> {
 
     final response = await _supabase
         .from('transaction')
-        .select()
+        .select('*, category(*)')
         .gte('date', firstDayOfMonth.toIso8601String().substring(0, 10))
         .lt('date', lastDayOfMonth.toIso8601String().substring(0, 10));
 
@@ -179,11 +180,42 @@ class _CalendarTabState extends State<CalendarTab> {
   }
 
   Widget _buildEventsMarker(List events) {
+    Map<int, int> categorySum = {};
+    Map<int, String> colorCodes = {};
+
+    for (var event in events) {
+      int categoryId = event['category_id'];
+      int amount = event['amount'];
+      String colorCode = event['category']['color'];
+
+      if (categorySum.containsKey(categoryId)) {
+        categorySum[categoryId] = categorySum[categoryId]! + amount;
+      } else {
+        categorySum[categoryId] = amount;
+        colorCodes[categoryId] = colorCode;
+      }
+    }
+
+    // 가장 높은 금액의 카테고리 찾기
+    int highestCategory = categorySum.keys.first;
+    int highestSum = categorySum[highestCategory]!;
+
+    categorySum.forEach((category, sum) {
+      if (sum > highestSum) {
+        highestCategory = category;
+        highestSum = sum;
+      }
+    });
+
+    // 해당 카테고리의 색상으로 마커 색상 설정
+    Color markerColor =
+        transColor(colorCodes[highestCategory]!) ?? Colors.blueAccent;
+
     return Container(
       width: 7,
       height: 7,
       decoration: BoxDecoration(
-        color: Colors.blueAccent,
+        color: markerColor,
         shape: BoxShape.circle,
       ),
     );
