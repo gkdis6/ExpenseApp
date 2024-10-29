@@ -167,9 +167,54 @@ class _CalendarTabState extends State<CalendarTab> {
                     itemCount: _selectedDayTransactions.length,
                     itemBuilder: (context, index) {
                       final transaction = _selectedDayTransactions[index];
-                      return ListTile(
-                        title: Text(transaction['description']),
-                        subtitle: Text('${transaction['amount']}'),
+                      final category = transaction['category'];
+                      final categoryColor =
+                          transColor(category['color']); // 색상 변환
+                      final categoryName = category['name'];
+
+                      return Row(
+                        mainAxisAlignment:
+                            MainAxisAlignment.spaceBetween, // 양쪽 끝에 배치
+                        children: [
+                          Container(
+                            padding: EdgeInsets.symmetric(horizontal: 12),
+                            width: 200, // 원하는 폭으로 설정
+                            child: ListTile(
+                              contentPadding: EdgeInsets.symmetric(
+                                  horizontal: 8), // 내부 여백 조정
+                              title: Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.start, // 왼쪽 정렬
+                                children: [
+                                  Text(transaction['description']),
+                                ],
+                              ),
+                              subtitle: Column(
+                                crossAxisAlignment:
+                                    CrossAxisAlignment.start, // 왼쪽 정렬
+                                children: [
+                                  Text('${transaction['amount']} 원'),
+                                ],
+                              ),
+                            ),
+                          ),
+                          Container(
+                            margin: EdgeInsets.symmetric(horizontal: 20),
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: categoryColor?.withOpacity(0.2) ??
+                                  Colors.grey.withOpacity(0.2), // 연한 배경색
+                              borderRadius: BorderRadius.circular(8), // 둥근 모서리
+                            ),
+                            child: Text(
+                              '$categoryName',
+                              style: TextStyle(
+                                  color: categoryColor ?? Colors.grey),
+                            ),
+                          ), // 카테고리 이름
+                        ],
                       );
                     },
                   ),
