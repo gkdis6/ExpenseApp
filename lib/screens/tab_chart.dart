@@ -77,7 +77,7 @@ class _ChartTabState extends State<ChartTab> {
         String categoryName = transaction['category']['name'];
         String categoryId = transaction['category']['id'].toString();
         String categoryColor = transaction['category']['color'];
-        double amount = transaction['amount'].toDouble();
+        int amount = transaction['amount'];
 
         if (categorySummary.containsKey(categoryId)) {
           categorySummary[categoryId]['amount'] += amount;
