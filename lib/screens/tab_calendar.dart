@@ -52,7 +52,7 @@ class _CalendarTabState extends State<CalendarTab> {
   Future<void> _fetchTransactionsForDay(DateTime date) async {
     final response = await _supabase
         .from('transaction')
-        .select()
+        .select('*, category(*)')
         .eq('date', date.toIso8601String().substring(0, 10));
 
     if (response != null && response.isNotEmpty) {
