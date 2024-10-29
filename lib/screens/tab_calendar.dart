@@ -257,8 +257,8 @@ class _CalendarTabState extends State<CalendarTab> {
         transColor(colorCodes[highestCategory]!) ?? Colors.blueAccent;
 
     return Container(
-      width: 7,
-      height: 7,
+      width: 5,
+      height: 5,
       decoration: BoxDecoration(
         color: markerColor,
         shape: BoxShape.circle,
