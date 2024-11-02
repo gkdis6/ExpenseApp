@@ -182,14 +182,14 @@ class _ChartTabState extends State<ChartTab> {
                         dateFormat: DateFormat.d(),
                         interval: 1,
                       ),
-                      // tooltipBehavior: TooltipBehavior(
-                      //   enable: true,
-                      //   activationMode:
-                      //       ActivationMode.singleTap, // 클릭(또는 터치) 시에만 툴팁 활성화
-                      //   tooltipPosition: TooltipPosition.auto,
-                      //   header: 'point.x',
-                      //   format: '누적합: point.y 원', // 툴팁 내용 커스텀
-                      // ), // 툴팁 활성화
+                      tooltipBehavior: TooltipBehavior(
+                        enable: true,
+                        activationMode:
+                            ActivationMode.singleTap, // 클릭(또는 터치) 시에만 툴팁 활성화
+                        tooltipPosition: TooltipPosition.auto,
+                        header: '',
+                        format: 'point.y 원', // 툴팁 내용 커스텀
+                      ), // 툴팁 활성화
                       series: <ChartSeries>[
                         LineSeries<Map<String, dynamic>, DateTime>(
                           dataSource: transactions,
