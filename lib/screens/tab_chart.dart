@@ -40,20 +40,59 @@ class _ChartTabState extends State<ChartTab> {
                 .toIso8601String())
         .order('date', ascending: true);
 
+    DateTime startDate = DateTime(_selectedMonth.year, _selectedMonth.month, 1);
+    DateTime endDate =
+        DateTime(_selectedMonth.year, _selectedMonth.month + 1, 1);
+
+    // 모든 날짜를 포함하는 초기화
+    List<Map<String, dynamic>> cumulativeData = [];
+    double cumulativeSum = 0; // 누적합 초기화
+
+    // 모든 날짜를 초기화하고 누적합을 설정
+    for (DateTime date = startDate;
+        date.isBefore(endDate);
+        date = date.add(Duration(days: 1))) {
+      // 날짜별 초기값 추가
+      cumulativeData.add({
+        'date': date.toIso8601String().split('T')[0], // 날짜만 사용
+        'cumulativeAmount': 0, // 초기값은 0
+        'category': '', // 초기 카테고리는 빈 문자열로 설정
+        'color': Colors.transparent // 기본 색상은 투명
+      });
+    }
+
     if (response != null && response.isNotEmpty) {
       List<Map<String, dynamic>> transactions =
           List<Map<String, dynamic>>.from(response);
 
       // 누적합 계산
-      double cumulativeSum = 0;
       for (var transaction in transactions) {
-        cumulativeSum += transaction['amount'];
-        transaction['cumulativeAmount'] = cumulativeSum;
+        String dateString =
+            DateTime.parse(transaction['date']).toIso8601String().split('T')[0];
+        double amount = transaction['amount'].toDouble();
+
+        // 누적합 업데이트
+        cumulativeSum += amount;
+
+        // 해당 날짜의 누적합 업데이트
+        var dataPoint =
+            cumulativeData.firstWhere((data) => data['date'] == dateString);
+        dataPoint['cumulativeAmount'] = cumulativeSum; // 누적합 업데이트
+        dataPoint['category'] = transaction['category']['name']; // 카테고리 업데이트
+        dataPoint['color'] = transaction['category']['color']; // 색상 업데이트
       }
 
-      return transactions;
+      // 거래가 없는 날짜에 누적합을 전날과 동일하게 설정
+      for (int i = 1; i < cumulativeData.length; i++) {
+        if (cumulativeData[i]['cumulativeAmount'] == 0) {
+          cumulativeData[i]['cumulativeAmount'] =
+              cumulativeData[i - 1]['cumulativeAmount']; // 이전 날짜의 누적합을 사용
+        }
+      }
+
+      return cumulativeData;
     } else {
-      return []; // 데이터가 없으면 빈 리스트 반환
+      return cumulativeData; // 거래가 없으면 누적 데이터 리스트 반환
     }
   }
 
