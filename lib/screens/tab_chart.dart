@@ -190,7 +190,7 @@ class _ChartTabState extends State<ChartTab> {
                         header: '',
                         format: 'point.y 원', // 툴팁 내용 커스텀
                       ), // 툴팁 활성화
-                      series: <ChartSeries>[
+                      series: <CartesianSeries>[
                         LineSeries<Map<String, dynamic>, DateTime>(
                           dataSource: transactions,
                           xValueMapper: (transaction, _) =>
