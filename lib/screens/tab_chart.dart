@@ -40,59 +40,87 @@ class _ChartTabState extends State<ChartTab> {
                 .toIso8601String())
         .order('date', ascending: true);
 
+    final categories = response.map((item) => item['category']).toList();
+
+    final distinctCategories = categories.fold<List<Map<String, dynamic>>>(
+      [],
+      (accumulator, current) {
+        // 중복 여부를 체크하고 없으면 추가
+        if (!accumulator.any((item) => item['id'] == current['id'])) {
+          accumulator.add(current);
+        }
+        return accumulator;
+      },
+    );
+    print(distinctCategories);
+
+    Map<String, Map<String, int>> cumulativeByDateAndCategory = {};
     DateTime startDate = DateTime(_selectedMonth.year, _selectedMonth.month, 1);
     DateTime endDate =
         DateTime(_selectedMonth.year, _selectedMonth.month + 1, 1);
-
-    // 모든 날짜를 포함하는 초기화
     List<Map<String, dynamic>> cumulativeData = [];
-    double cumulativeSum = 0; // 누적합 초기화
-
-    // 모든 날짜를 초기화하고 누적합을 설정
-    for (DateTime date = startDate;
-        date.isBefore(endDate);
-        date = date.add(Duration(days: 1))) {
-      // 날짜별 초기값 추가
-      cumulativeData.add({
-        'date': date.toIso8601String().split('T')[0], // 날짜만 사용
-        'cumulativeAmount': 0, // 초기값은 0
-        'category': '', // 초기 카테고리는 빈 문자열로 설정
-        'color': Colors.transparent // 기본 색상은 투명
-      });
-    }
 
     if (response != null && response.isNotEmpty) {
       List<Map<String, dynamic>> transactions =
           List<Map<String, dynamic>>.from(response);
 
-      // 누적합 계산
-      for (var transaction in transactions) {
-        String dateString =
-            DateTime.parse(transaction['date']).toIso8601String().split('T')[0];
-        double amount = transaction['amount'].toDouble();
+      Map<String, int> categoryTotals = {};
 
-        // 누적합 업데이트
-        cumulativeSum += amount;
+      for (DateTime date = startDate;
+          date.isBefore(endDate);
+          date = date.add(Duration(days: 1))) {
+        String dateString = date.toIso8601String().split('T')[0];
+        cumulativeByDateAndCategory[dateString] = {};
 
-        // 해당 날짜의 누적합 업데이트
-        var dataPoint =
-            cumulativeData.firstWhere((data) => data['date'] == dateString);
-        dataPoint['cumulativeAmount'] = cumulativeSum; // 누적합 업데이트
-        dataPoint['category'] = transaction['category']['name']; // 카테고리 업데이트
-        dataPoint['color'] = transaction['category']['color']; // 색상 업데이트
-      }
+        // 해당 날짜에 있는 모든 거래를 누적합에 반영
+        for (var transaction in transactions.where((txn) =>
+            DateTime.parse(txn['date']).toIso8601String().split('T')[0] ==
+            dateString)) {
+          String findCategory = transaction['category']['name'];
+          int findAmount = transaction['amount'];
+          // String findColor = transaction['category']['color'];
 
-      // 거래가 없는 날짜에 누적합을 전날과 동일하게 설정
-      for (int i = 1; i < cumulativeData.length; i++) {
-        if (cumulativeData[i]['cumulativeAmount'] == 0) {
-          cumulativeData[i]['cumulativeAmount'] =
-              cumulativeData[i - 1]['cumulativeAmount']; // 이전 날짜의 누적합을 사용
+          // 누적합 계산
+          categoryTotals[findCategory] =
+              (categoryTotals[findCategory] ?? 0) + findAmount;
+
+          var existingData = cumulativeData.firstWhere(
+            (data) =>
+                data['date'] == dateString && data['category'] == findCategory,
+            orElse: () => {},
+          );
+
+          if (existingData.length > 0) {
+            // 이미 있는 경우 누적 금액만 업데이트
+            existingData['cumulativeAmount'] = categoryTotals[findCategory];
+          } else {
+            // 새로 추가
+            // cumulativeData.add({
+            //   'date': dateString,
+            //   'category': findCategory,
+            //   'cumulativeAmount': categoryTotals[findCategory],
+            //   'color': findColor,
+            // });
+          }
         }
+
+        for (var category in distinctCategories) {
+          String categoryName = category['name'];
+          String categoryColor = category['color'];
+          cumulativeData.add({
+            'date': dateString,
+            'category': categoryName,
+            'cumulativeAmount': categoryTotals[categoryName] ?? 0,
+            'color': categoryColor,
+          });
+        }
+        //
       }
 
+      // print(cumulativeData);
       return cumulativeData;
     } else {
-      return cumulativeData; // 거래가 없으면 누적 데이터 리스트 반환
+      return [];
     }
   }
 
@@ -169,14 +197,31 @@ class _ChartTabState extends State<ChartTab> {
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (snapshot.hasData) {
-            if (snapshot.data!.isEmpty) {
+            final cumulativeData = snapshot.data!;
+            if (cumulativeData.isEmpty) {
               return Center(child: Text('데이터를 추가해주세요'));
             } else {
+              // 카테고리별로 나눠서 LineSeries 생성
+              List<Map<String, dynamic>> categories = [];
+              for (var data in cumulativeData) {
+                print(data);
+                if (!categories
+                    .any((item) => item['category'] == data['category'])) {
+                  categories.add(
+                      {'category': data['category'], 'color': data['color']});
+                }
+              }
+
               final transactions = snapshot.data!;
               return SingleChildScrollView(
                 child: Column(
                   children: [
                     SfCartesianChart(
+                      legend: Legend(
+                        isVisible: true,
+                        toggleSeriesVisibility:
+                            true, // 범례를 클릭하여 시리즈를 숨기거나 표시할 수 있음
+                      ),
                       primaryXAxis: DateTimeAxis(
                         intervalType: DateTimeIntervalType.days,
                         dateFormat: DateFormat.d(),
@@ -190,16 +235,20 @@ class _ChartTabState extends State<ChartTab> {
                         header: '',
                         format: 'point.y 원', // 툴팁 내용 커스텀
                       ), // 툴팁 활성화
-                      series: <CartesianSeries>[
-                        LineSeries<Map<String, dynamic>, DateTime>(
-                          dataSource: transactions,
-                          xValueMapper: (transaction, _) =>
-                              DateTime.parse(transaction['date']),
-                          yValueMapper: (transaction, _) =>
-                              transaction['cumulativeAmount'],
-                          markerSettings: MarkerSettings(isVisible: true),
-                          // dataLabelSettings: DataLabelSettings(isVisible: true),
-                        ),
+                      series: <StackedAreaSeries<Map<String, dynamic>,
+                          DateTime>>[
+                        for (var category in categories)
+                          StackedAreaSeries<Map<String, dynamic>, DateTime>(
+                            name: category['category'],
+                            color: transColor(category['color']),
+                            dataSource: cumulativeData
+                                .where((data) =>
+                                    data['category'] == category['category'])
+                                .toList(),
+                            xValueMapper: (data, _) =>
+                                DateTime.parse(data['date']),
+                            yValueMapper: (data, _) => data['cumulativeAmount'],
+                          ),
                       ],
                     ),
                     FutureBuilder<List<Map<String, dynamic>>>(
