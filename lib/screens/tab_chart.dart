@@ -1,3 +1,4 @@
+import 'package:financial_app/utils/common.dart';
 import 'package:financial_app/utils/supabase.dart';
 import 'package:financial_app/utils/trans.dart';
 import 'package:flutter/material.dart';
@@ -177,7 +178,7 @@ class _ChartTabState extends State<ChartTab> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(DateFormat.yMMM().format(_selectedMonth)),
+        // title: Text(_selectedMonth.formattedYearMonth),
         actions: [
           IconButton(
             icon: Icon(Icons.arrow_back),

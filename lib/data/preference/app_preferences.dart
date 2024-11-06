@@ -1,3 +1,4 @@
+import 'package:financial_app/data/theme/custom_theme.dart';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -116,8 +117,8 @@ class AppPreferences {
       }
     } else {
       switch (t) {
-        // case CustomTheme:
-        //   return CustomTheme.values.asNameMap()[value] as T?;
+        case CustomTheme:
+          return CustomTheme.values.asNameMap()[value] as T?;
         case DateTime:
           return DateTime.parse(value) as T?;
         default:

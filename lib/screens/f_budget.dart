@@ -1,7 +1,7 @@
 import 'package:financial_app/screens/tab_calendar.dart';
 import 'package:financial_app/screens/tab_chart.dart';
+import 'package:financial_app/utils/common.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 import '../utils/auth.dart';
 import 'd_add_transaction.dart';
@@ -72,7 +72,7 @@ class _BudgetFragmentState extends State<BudgetFragment> {
           icon: Icon(Icons.logout),
           onPressed: () => logout(context),
         ),
-        title: Text(DateFormat.yMMM().format(_selectedMonth)),
+        title: Text(_selectedMonth.formattedYearMonth),
         actions: [
           IconButton(
             icon: Icon(Icons.add),

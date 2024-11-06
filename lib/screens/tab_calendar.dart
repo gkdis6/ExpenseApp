@@ -117,6 +117,7 @@ class _CalendarTabState extends State<CalendarTab> {
       body: Column(
         children: [
           TableCalendar(
+            // headerVisible: false,
             firstDay: DateTime(2000),
             lastDay: DateTime(2100),
             focusedDay: _focusedDay,
@@ -158,6 +159,7 @@ class _CalendarTabState extends State<CalendarTab> {
                 }
                 return SizedBox();
               },
+              headerTitleBuilder: (context, day) => SizedBox.shrink(),
             ),
           ),
           Expanded(
