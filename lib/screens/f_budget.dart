@@ -75,6 +75,10 @@ class _BudgetFragmentState extends State<BudgetFragment> {
         title: Text(_selectedMonth.formattedYearMonth),
         actions: [
           IconButton(
+            icon: Icon(Icons.settings),
+            onPressed: () => {},
+          ),
+          IconButton(
             icon: Icon(Icons.add),
             onPressed: () => _showAddTransactionDialog(context),
           ),
