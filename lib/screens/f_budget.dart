@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 import '../utils/auth.dart';
 import 'd_add_transaction.dart';
+import 's_setting.dart';
 
 class BudgetFragment extends StatefulWidget {
   @override
@@ -51,6 +52,15 @@ class _BudgetFragmentState extends State<BudgetFragment> {
     );
   }
 
+  void _showSettingScreen(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return SettingScreen();
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     List<Widget> _screens = [
@@ -76,7 +86,7 @@ class _BudgetFragmentState extends State<BudgetFragment> {
         actions: [
           IconButton(
             icon: Icon(Icons.settings),
-            onPressed: () => {},
+            onPressed: () => _showSettingScreen(context),
           ),
           IconButton(
             icon: Icon(Icons.add),

@@ -2,12 +2,15 @@ import 'package:financial_app/screens/f_login.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
+import 'data/preference/app_preferences.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load();
   // final _supabase = SupabaseClientInstance.client;
   // final session = _supabase.auth.currentSession;
   // runApp(MyApp(isLoggedIn: session != null));
+  await AppPreferences.init();
   runApp(MaterialApp(
     home: LoginFragment(),
     // theme: ThemeData(
