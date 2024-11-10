@@ -1,10 +1,10 @@
 import 'package:financial_app/data/preference/prefs.dart';
-import 'package:financial_app/screens/w_big_button.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:velocity_x/velocity_x.dart';
 
 import 'd_number.dart';
+import 'w_big_button.dart';
 import 'w_switch_menu.dart';
 
 class SettingScreen extends StatefulWidget {
@@ -43,7 +43,6 @@ class _SettingScreenState extends State<SettingScreen> {
               },
             ),
           ),
-          //date time
           Obx(
             () => BigButton(
               '저장된 숫자 ${Prefs.number.get()}',

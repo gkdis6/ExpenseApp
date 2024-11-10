@@ -1,5 +1,5 @@
 // utils/auth.dart
-import 'package:financial_app/screens/f_login.dart';
+import 'package:financial_app/screens/s_login.dart';
 import 'package:financial_app/utils/supabase.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -15,7 +15,7 @@ Future<void> logout(BuildContext context) async {
     await _supabase.auth.signOut();
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => LoginFragment()),
+      MaterialPageRoute(builder: (context) => LoginScreen()),
     );
   } catch (e) {
     ScaffoldMessenger.of(context).showSnackBar(

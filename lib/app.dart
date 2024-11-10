@@ -2,16 +2,16 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:financial_app/data/theme/custom_theme_app.dart';
 import 'package:financial_app/utils/common.dart';
-import 'package:financial_app/utils/context_extension.dart';
 import 'package:flutter/material.dart';
 
 import 'data/theme/custom_theme.dart';
+import 'screens/s_login.dart';
 
 class App extends StatefulWidget {
   static final GlobalKey<NavigatorState> navigatorKey = GlobalKey();
 
   ///light, dark 테마가 준비되었고, 시스템 테마를 따라가게 하려면 해당 필드를 제거 하시면 됩니다.
-  static const defaultTheme = CustomTheme.dark;
+  static const defaultTheme = CustomTheme.light;
   static bool isForeground = true;
 
   const App({super.key});
@@ -47,7 +47,7 @@ class AppState extends State<App> with Nav, WidgetsBindingObserver {
           locale: context.locale,
           title: 'Image Finder',
           theme: context.themeType.themeData,
-          // home: const MainScreen(),
+          home: const LoginScreen(),
         );
       }),
     );

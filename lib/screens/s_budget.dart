@@ -7,12 +7,14 @@ import '../utils/auth.dart';
 import 'd_add_transaction.dart';
 import 's_setting.dart';
 
-class BudgetFragment extends StatefulWidget {
+class BudgetScreen extends StatefulWidget {
+  const BudgetScreen({super.key});
+
   @override
-  State<BudgetFragment> createState() => _BudgetFragmentState();
+  State<BudgetScreen> createState() => _BudgetScreenState();
 }
 
-class _BudgetFragmentState extends State<BudgetFragment> {
+class _BudgetScreenState extends State<BudgetScreen> {
   DateTime _selectedMonth = DateTime.now();
   DateTime _focusedDayFromCalendar =
       DateTime.now(); // CalendarTab에서 받아올 focusedDay
